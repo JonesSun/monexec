@@ -67,7 +67,8 @@ func (su *supervisor) Spawn(runnable Runnable) (ID, <-chan error, func()) {
 	if su.closed {
 		return "", nil, nil
 	}
-	id := ID(uuid.NewV4().String())
+	uuid,_:=uuid.NewV4()
+	id := ID(uuid.String())
 	su.register(runnable, id)
 	su.group.Add(1)
 	end := make(chan error, 1)
