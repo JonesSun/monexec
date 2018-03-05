@@ -13,9 +13,9 @@ import (
 
 func run() {
 
-	path := "/home/i5/agentServer"
+	path := "/home/i5/bin/agentServer"
 	if "windows" == runtime.GOOS {
-		path = "c:/agentServer.exe"
+		path = "c:/bin/agentServer.exe"
 	}
 
 	config := DefaultConfig()
