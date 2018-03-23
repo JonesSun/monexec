@@ -6,36 +6,55 @@ import (
 	"context"
 	"log"
 	"github.com/reddec/monexec/monexec"
+	conf "github.com/reddec/monexec/config"
 	"os/signal"
 	"syscall"
 	"runtime"
+	"github.com/reddec/monexec/util"
+	"strings"
+	"path"
 )
 
 func run() {
 
-	path := "/home/i5/bin/agentServer"
-	if "windows" == runtime.GOOS {
-		path = "c:/bin/agentServer.exe"
-	}
-
+	conf.Init()
 	config := DefaultConfig()
 
+	agentServer := "/home/i5/bin/agentServer"
+	if "windows" == runtime.GOOS {
+		agentServer = "c:/bin/agentServer.exe"
+	}
 	config.Services = append(config.Services, monexec.Executable{
 		Name:    "agentServer",
-		Command: path,
+		Command: agentServer,
 		Restart: 0,
 	})
-	FillDefaultExecutable(&config.Services[0])
 
-	sv := container.NewSupervisor(log.New(os.Stderr, "[supervisor] ", log.LstdFlags))
+	conf.Config.Services = strings.TrimSpace(conf.Config.Services)
+	if "" != conf.Config.Services {
+
+		services := strings.Split(conf.Config.Services, ",")
+		for _, service := range services {
+
+			fileName := path.Base(service)
+			config.Services = append(config.Services, monexec.Executable{
+				Name:    fileName,
+				Command: service,
+				Restart: 0,
+			})
+		}
+	}
+
+	sv := container.NewSupervisor(log.New(util.LogOutput, "[supervisor] ", log.LstdFlags))
 	runConfigInSupervisor(&config, sv)
 }
 
 func runConfigInSupervisor(config *Config, sv container.Supervisor) {
-	ctx, stop := context.WithCancel(context.Background())
 
+	ctx, stop := context.WithCancel(context.Background())
 	c := make(chan os.Signal, 2)
 	signal.Notify(c, syscall.SIGINT, syscall.SIGTERM)
+
 	go func() {
 		for range c {
 			stop()
