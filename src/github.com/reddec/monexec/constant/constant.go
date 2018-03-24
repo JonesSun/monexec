@@ -18,4 +18,13 @@ const (
 
 	// WinConfPath const
 	WinConfPath = WindowsRootPath + "config/agentConfig.properties"
+
+	// LinuxBinPath LinuxBinPath
+	LinuxBinPath = LinuxRootPath + "bin/monexec"
+
+	// WindowsRootPath WindowsRootPath
+	WindowsBinPath = WindowsRootPath + "bin/monexec"
+
+	//LinuxStartShellFile
+	LinuxStartShellFile = "/etc/init.d/"
 )

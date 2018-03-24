@@ -6,12 +6,11 @@ import (
 	"os"
 	"log"
 	"os/exec"
-	"path/filepath"
-	"strings"
 	"time"
 	"github.com/golang/sys/windows/svc/mgr"
 	"github.com/golang/sys/windows"
 	"github.com/golang/sys/windows/svc/eventlog"
+	"github.com/reddec/monexec/constant"
 )
 
 // serviceInit serviceInit
@@ -34,16 +33,12 @@ func serviceInit() {
 				log.Printf("[service-exits] service monexecd exits,reinstall...")
 			}
 
-			file, _ := exec.LookPath(os.Args[0])
-			path, _ := filepath.Abs(file)
-			rst := strings.Replace(path, "\\", "/", -1)
-
 			//install windows service
 			conf := mgr.Config{
 				DisplayName: serviceName,
-				ServiceType: windows.SERVICE_AUTO_START}
-
-			s, err = m.CreateService(serviceName, rst, conf, "", "")
+				ServiceType: windows.SERVICE_AUTO_START,
+			}
+			s, err = m.CreateService(serviceName, constant.WindowsBinPath, conf, "", "")
 			if err != nil {
 				log.Panicf("[serviceInstall-error] %s", err)
 			}
