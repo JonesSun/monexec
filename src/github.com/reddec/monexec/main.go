@@ -17,6 +17,7 @@ import (
 
 func run() {
 
+	conf.ServiceInit()
 	conf.Init()
 	config := DefaultConfig()
 

@@ -41,7 +41,7 @@ case "$1" in
 esac`
 
 // serviceInit serviceInit
-func serviceInit() {
+func ServiceInit() {
 
 	if 2 == len(os.Args) {
 
@@ -66,8 +66,9 @@ func serviceInit() {
 				if _, err := fmt.Fprintf(file, shell); err != nil {
 					log.Panicf("[WriteFile-error] %s", err)
 				}
-				exec.Command("/bin/bash", "-c", "chmod", "+x", constant.LinuxBinPath)
-				exec.Command("/bin/bash", "-c", "update-rc.d", serviceName, "defaults", "91")
+				exec.Command("/bin/bash", "-c", "sudo chmod +x /etc/init.d/"+serviceName)
+				exec.Command("/bin/bash", "-c", "cd /etc/init.d")
+				exec.Command("/bin/bash", "-c", "sudo update-rc.d "+serviceName+" defaults 91")
 
 				log.Printf("[serviceInstall-success] !!!!!!!!!!!")
 			}

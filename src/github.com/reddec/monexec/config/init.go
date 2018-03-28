@@ -21,7 +21,6 @@ type config struct {
 func Init() {
 	initConfig()
 	logInit()
-	serviceInit()
 }
 
 //InitConfig
