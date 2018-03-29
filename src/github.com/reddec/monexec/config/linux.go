@@ -9,10 +9,11 @@ import (
 	"github.com/reddec/monexec/constant"
 	"fmt"
 	"os/exec"
+
+	"github.com/reddec/monexec/util"
 )
 
-const shell = `
-#!/bin/sh
+const shell = `#!/bin/sh
 # monexec
 
 start() {
@@ -45,8 +46,12 @@ func ServiceInit() {
 
 	if 2 == len(os.Args) {
 
+		log.SetFlags(log.LstdFlags)
+		log.SetOutput(os.Stdout)
+
 		serviceName := "monexecd"
 		path := constant.LinuxStartShellFile + serviceName
+		log.SetFlags(log.LstdFlags)
 
 		if "install" == os.Args[1] {
 
@@ -66,10 +71,15 @@ func ServiceInit() {
 				if _, err := fmt.Fprintf(file, shell); err != nil {
 					log.Panicf("[WriteFile-error] %s", err)
 				}
-				exec.Command("/bin/bash", "-c", "sudo chmod +x /etc/init.d/"+serviceName)
-				exec.Command("/bin/bash", "-c", "cd /etc/init.d")
-				exec.Command("/bin/bash", "-c", "sudo update-rc.d "+serviceName+" defaults 91")
-
+				_, err = util.RunCmd("/bin/bash", "-c", "chmod +x "+constant.LinuxStartShellFile+serviceName)
+				if err != nil {
+					log.Panicf("[chmodx-error] %s\n", err)
+				}
+				out, err := util.RunCmd("/bin/bash", "-c", "cd "+constant.LinuxStartShellFile+";update-rc.d "+serviceName+" defaults 91")
+				if err != nil {
+					log.Panicf("[update-rc.d-error] %s\n", err)
+				}
+				log.Println(out)
 				log.Printf("[serviceInstall-success] !!!!!!!!!!!")
 			}
 			time.Sleep(time.Duration(3 * time.Second))
