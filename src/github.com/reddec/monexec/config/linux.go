@@ -8,8 +8,6 @@ import (
 	"time"
 	"github.com/reddec/monexec/constant"
 	"fmt"
-	"os/exec"
-
 	"github.com/reddec/monexec/util"
 )
 
@@ -94,8 +92,14 @@ func ServiceInit() {
 
 			} else {
 
-				exec.Command("/bin/bash", "-c", "update-rc.d", "-f", serviceName, "remove")
-				exec.Command("/bin/bash", "-c", "rm", "-rf", path)
+				out, err := util.RunCmd("/bin/bash", "-c", "update-rc.d -f "+serviceName+" remove")
+				if err != nil {
+					log.Panicf("[update-rc.d-remove-error] %s\n", err)
+				}
+				log.Println(out)
+				if _, err = util.RunCmd("/bin/bash", "-c", "rm -rf "+path); err != nil {
+					log.Panicf("[deleteServiceFile-error] %s\n", err)
+				}
 			}
 
 			log.Printf("[serviceRemove-success] !!!!!!!!!!!")
