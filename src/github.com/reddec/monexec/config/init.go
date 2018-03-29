@@ -12,7 +12,7 @@ import (
 )
 
 // AgentConfig is global config
-var Config config
+var AgentConfig config
 
 type config struct {
 	Services string `properties:"services,default="`
@@ -40,7 +40,7 @@ func initConfig() {
 	properties.ErrorHandler = func(e error) {
 		log.Printf("[setBoxConfig-error] %s\n", e)
 	}
-	if err = util.Config.Properties.Decode(&Config); err != nil {
+	if err = util.Config.Properties.Decode(&AgentConfig); err != nil {
 		panic(err)
 	}
 }

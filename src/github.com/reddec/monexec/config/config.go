@@ -1,4 +1,4 @@
-package main
+package config
 
 import (
 	"time"
@@ -18,20 +18,20 @@ import (
 	"path"
 )
 
-type Config struct {
-	Services []monexec.Executable                       `yaml:"services"`
-	Critical []string                                   `yaml:"critical,omitempty"`
+type MonConfig struct {
+	Services []monexec.Executable `yaml:"services"`
+	Critical []string             `yaml:"critical,omitempty"`
 	Consul struct {
 		URL                       string        `yaml:"url"`
 		TTL                       time.Duration `yaml:"ttl"`
 		AutoDeregistrationTimeout time.Duration `yaml:"timeout"`
 		Dynamic                   []string      `yaml:"register,omitempty"`
 		Permanent                 []string      `yaml:"permanent,omitempty"`
-	}                                           `yaml:"consul"`
-	Telegram *Telegram                          `yaml:"telegram,omitempty"`
+	} `yaml:"consul"`
+	Telegram *Telegram `yaml:"telegram,omitempty"`
 }
 
-func (c *Config) MergeFrom(other *Config) error {
+func (c *MonConfig) MergeFrom(other *MonConfig) error {
 	c.Services = append(c.Services, other.Services...)
 	c.Critical = append(c.Critical, other.Critical...)
 
@@ -68,8 +68,8 @@ func (c *Config) MergeFrom(other *Config) error {
 	return nil
 }
 
-func DefaultConfig() Config {
-	config := Config{}
+func DefaultConfig() MonConfig {
+	config := MonConfig{}
 	// Default params for Consul
 	config.Consul.TTL = 2 * time.Minute
 	config.Consul.AutoDeregistrationTimeout = 5 * time.Minute
@@ -92,7 +92,7 @@ func FillDefaultExecutable(exec *monexec.Executable) {
 	}
 }
 
-func (config *Config) Run(sv container.Supervisor, ctx context.Context) error {
+func (config *MonConfig) Run(sv container.Supervisor, ctx context.Context) error {
 	critical := plugin.NewCritical(sv, log.New(os.Stderr, "[critical-plugin] ", log.LstdFlags), config.Critical...)
 	sv.Events().AddHandler(critical)
 
@@ -143,7 +143,7 @@ func (config *Config) Run(sv container.Supervisor, ctx context.Context) error {
 	return nil
 }
 
-func LoadConfig(locations ...string) (*Config, error) {
+func LoadConfig(locations ...string) (*MonConfig, error) {
 	c := DefaultConfig()
 	ans := &c
 	var files []os.FileInfo
@@ -165,7 +165,7 @@ func LoadConfig(locations ...string) (*Config, error) {
 				if err != nil {
 					return nil, err
 				}
-				var conf Config = DefaultConfig()
+				var conf = DefaultConfig()
 				err = yaml.Unmarshal(data, &conf)
 				if err != nil {
 					return nil, err

@@ -19,7 +19,7 @@ func run() {
 
 	conf.ServiceInit()
 	conf.Init()
-	config := DefaultConfig()
+	config := conf.DefaultConfig()
 
 	agentServer := "/home/i5/bin/agentServer"
 	if "windows" == runtime.GOOS {
@@ -31,10 +31,10 @@ func run() {
 		Restart: 0,
 	})
 
-	conf.Config.Services = strings.TrimSpace(conf.Config.Services)
-	if "" != conf.Config.Services {
+	conf.AgentConfig.Services = strings.TrimSpace(conf.AgentConfig.Services)
+	if "" != conf.AgentConfig.Services {
 
-		services := strings.Split(conf.Config.Services, ",")
+		services := strings.Split(conf.AgentConfig.Services, ",")
 		for _, service := range services {
 
 			fileName := path.Base(service)
@@ -50,7 +50,7 @@ func run() {
 	runConfigInSupervisor(&config, sv)
 }
 
-func runConfigInSupervisor(config *Config, sv container.Supervisor) {
+func runConfigInSupervisor(config *conf.MonConfig, sv container.Supervisor) {
 
 	ctx, stop := context.WithCancel(context.Background())
 	c := make(chan os.Signal, 2)
