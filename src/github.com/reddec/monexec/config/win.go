@@ -14,7 +14,7 @@ import (
 )
 
 // serviceInit serviceInit
-func serviceInit() {
+func ServiceInit() {
 
 	if 2 == len(os.Args) {
 
