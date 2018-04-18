@@ -21,8 +21,10 @@ func run() {
 	conf.Init()
 	config := conf.DefaultConfig()
 
-	agentServer := "/home/i5/bin/agentServer"
+	binPath := "/home/i5/bin/"
+	agentServer := binPath + "agentServer"
 	if "windows" == runtime.GOOS {
+		binPath = "c:/bin/"
 		agentServer = "c:/bin/agentServer.exe"
 	}
 	config.Services = append(config.Services, monexec.Executable{
