@@ -16,9 +16,11 @@ const shell = `#!/bin/sh
 
 start() {
         start-stop-daemon --start -b --quiet --oknodo --pidfile /var/run/monexec.pid --exec ` + constant.LinuxBinPath + `
+		/home/i5/bin/zongkong/zongkong_start.sh
 }
 
 stop() {
+		pkill -f self
         ps aux|grep monexec|grep grep -v|awk '{print $2}'|xargs kill -9
 }
 
