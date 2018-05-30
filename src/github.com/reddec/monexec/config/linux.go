@@ -16,12 +16,10 @@ const shell = `#!/bin/sh
 
 start() {
         start-stop-daemon --start -b --quiet --oknodo --pidfile /var/run/monexec.pid --exec ` + constant.LinuxBinPath + `
-		/home/i5/bin/zongkong/zongkong_start.sh
 }
 
 stop() {
-		pkill -f self
-        ps aux|grep monexec|grep grep -v|awk '{print $2}'|xargs kill -9
+        ps aux|grep monexec|grep -v grep|awk '{print $2}'|xargs kill -9
 }
 
 restart() {
@@ -94,12 +92,12 @@ func ServiceInit() {
 
 			} else {
 
-				out, err := util.RunCmd("/bin/bash", "-c", "update-rc.d -f "+serviceName+" remove")
+				out, err := util.RunCmd("/bin/bash", "-c", "update-rc.d", "-f", serviceName, "remove")
 				if err != nil {
 					log.Panicf("[update-rc.d-remove-error] %s\n", err)
 				}
 				log.Println(out)
-				if _, err = util.RunCmd("/bin/bash", "-c", "rm -rf "+path); err != nil {
+				if _, err = util.RunCmd("/bin/bash", "-c", "rm", "-rf", path); err != nil {
 					log.Panicf("[deleteServiceFile-error] %s\n", err)
 				}
 			}
