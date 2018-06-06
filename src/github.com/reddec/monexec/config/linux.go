@@ -116,11 +116,10 @@ func ServiceInit() {
 				if err != nil {
 					log.Panicf("[chmodx-error] %s\n", err)
 				}
-				out, err := util.RunCmd("/bin/bash", "-c", "cd "+constant.LinuxStartShellFile+";update-rc.d "+serviceName+" defaults 91")
+				_, err = util.RunCmd("/bin/bash", "-c", "cd "+constant.LinuxStartShellFile+";update-rc.d "+serviceName+" defaults 91")
 				if err != nil {
 					log.Panicf("[update-rc.d-error] %s\n", err)
 				}
-				log.Println(out)
 				log.Printf("[serviceInstall-success] !!!!!!!!!!!")
 			}
 			time.Sleep(time.Duration(3 * time.Second))
