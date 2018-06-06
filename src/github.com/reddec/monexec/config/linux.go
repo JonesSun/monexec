@@ -11,15 +11,55 @@ import (
 	"github.com/reddec/monexec/util"
 )
 
-const shell = `#!/bin/sh
-# monexec
+const pid = "PID=`ps -ef |grep \"${NAME_BIN}\" |grep -v \"grep\" |grep -v \"init.d\" |grep -v \"service\" |awk '{print $2}'`"
+const shell = `#!/bin/bash
+# chkconfig: 2345 90 10
+# description: monexec is a daemon process
+
+### BEGIN INIT INFO
+# Provides:          monexec
+# Required-Start:    $network $syslog
+# Required-Stop:     $network
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: monexec
+# Description:       start or stop the monexec
+### END INIT INFO
+
+NAME="monexec"
+NAME_BIN="monexec"
+
+check_running(){
+    ` + pid + `    
+	if [[ ! -z ${PID} ]]; then
+		return 0
+	else
+		return 1
+	fi
+}
 
 start() {
-        start-stop-daemon --start -b --quiet --oknodo --pidfile /var/run/monexec.pid --exec ` + constant.LinuxBinPath + `
+	check_running
+	if [[ $? -eq 0 ]]; then
+			echo -e "${NAME} (PID ${PID}) running..." && exit 0
+        else
+			start-stop-daemon --start -b --quiet --oknodo --pidfile /var/run/${NAME}.pid --exec ` + constant.LinuxBinPath + `
+			sleep 1s
+			check_running
+			if [[ $? -eq 0 ]]; then
+			echo -e "${NAME} (PID ${PID}) start success !"
+			else
+			echo -e "${NAME} start fail !"
+			fi
+	fi
+	
 }
 
 stop() {
-        ps aux|grep monexec|grep -v grep|awk '{print $2}'|xargs kill -9
+	check_running
+	if [[ $? -eq 0 ]]; then
+		ps aux|grep ${NAME_BIN}|grep -v grep|awk '{print $2}'|xargs kill -9
+	fi
 }
 
 restart() {
@@ -34,8 +74,11 @@ case "$1" in
     stop)
         $1
         ;;
+	restart)
+		$1
+		;;
     *)
-        echo "Usage: $0 {start|stop}"
+        echo "Usage: $0 {start|stop|restart}"
         exit 2
 esac`
 
