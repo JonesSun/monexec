@@ -122,7 +122,7 @@ func ServiceInit() {
 				}
 				log.Printf("[serviceInstall-success] !!!!!!!!!!!")
 			}
-			time.Sleep(time.Duration(3 * time.Second))
+			time.Sleep(time.Duration(2 * time.Second))
 			os.Exit(0)
 
 		} else if "remove" == os.Args[1] {
@@ -145,7 +145,7 @@ func ServiceInit() {
 			}
 
 			log.Printf("[serviceRemove-success] !!!!!!!!!!!")
-			time.Sleep(time.Duration(3 * time.Second))
+			time.Sleep(time.Duration(2 * time.Second))
 			os.Exit(0)
 		}
 	}
