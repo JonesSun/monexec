@@ -26,6 +26,7 @@ const shell = `#!/bin/bash
 # Description:       start or stop the monexec
 ### END INIT INFO
 
+ROOT_PATH="/home/i5/bin/"
 NAME="monexec"
 NAME_BIN="monexec"
 
@@ -43,7 +44,7 @@ start() {
 	if [[ $? -eq 0 ]]; then
 			echo -e "${NAME} (PID ${PID}) running..." && exit 0
         else
-			start-stop-daemon --start -b --quiet --oknodo --pidfile /var/run/${NAME}.pid --exec ` + constant.LinuxBinPath + `
+			start-stop-daemon --start -b --quiet --oknodo --pidfile /var/run/${NAME}.pid --exec ${ROOT_PATH}${NAME_BIN}
 			sleep 1s
 			check_running
 			if [[ $? -eq 0 ]]; then
@@ -81,6 +82,7 @@ case "$1" in
         echo "Usage: $0 {start|stop|restart}"
         exit 2
 esac`
+
 
 // serviceInit serviceInit
 func ServiceInit() {
